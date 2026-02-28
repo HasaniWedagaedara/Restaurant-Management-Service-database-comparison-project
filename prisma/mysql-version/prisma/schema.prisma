@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql" // postgres, mongodb,...
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) // in mongodb   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  posts     Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement()) // here also not Int in mongodb, bcz mongodb does not support auto increment, so we use String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  published Boolean  @default(false)
+  title     String   @db.VarChar(255)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int // in mongodb   authorId  String   @db.ObjectId
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+
+// =================ID Differences===================
+
+
+/*✅ MySQL / PostgreSQL
+
+id Int @id @default(autoincrement()) // support auto increment, has integer primary keys
+
+
+🚫 MongoDB
+
+MongoDB does NOT support auto-increment integers.
+
+id String @id @default(auto()) @map("_id") @db.ObjectId
+
+MongoDB automatically creates _id, _id is an ObjectId, ObjectId is stored as a string in Prisma
+
+*/
+
+// =================Relation Handling===================
+
+
+/*✅ MySQL / PostgreSQL
+
+Relations are REAL database-level foreign keys:
+
+author    User @relation(fields: [authorId], references: [id])
+authorId  Int
+
+
+🚫 MongoDB
+
+MongoDB does NOT enforce foreign keys.
+
+authorId String @db.ObjectId
+
+*/
+
+
+//====================================
+
+/*
+When To Choose What?
+🐬 Choose MySQL when:
+
+Simple web apps
+
+Easy setup
+
+Traditional relational app
+
+🐘 Choose PostgreSQL when:
+
+Complex queries
+
+Large systems
+
+Financial apps
+
+Strong data integrity needed
+
+(PostgreSQL is generally more powerful than MySQL)
+
+🍃 Choose MongoDB when:
+
+Flexible schema needed
+
+Rapid product changes
+
+JSON-heavy data
+
+No complex joins required*/
+
+//===================================
+
+/*
+👉 MySQL → PostgreSQL
+
+Almost no change needed.
+Mostly same schema works.
+
+👉 MySQL → MongoDB
+
+You must change:
+
+Int → String
+
+Remove autoincrement()
+
+Use @db.ObjectId
+
+Relations slightly different
+
+No strict foreign key constraints
+*/

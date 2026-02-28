@@ -18,11 +18,19 @@ It supports basic CRUD operations for users, and later you can extend it to incl
 
 ---
 
+### Install required dependenicies
+
+```
+npm install cors express dotenv nodemon mysql
+```
+
 ## MySQL Setup with Docker
 
 ### 1. Run MySQL Container
 
 Open terminal (Git Bash) and run:
+
+### mysql
 
 ```bash
 docker run --name mysql-container \
@@ -44,6 +52,10 @@ docker run --name mysql-container \
 
 ###### - Run MySQL 8 inside Docker
 
+### mongodb
+```
+docker run --name mongodb-container -p 27017:27017 -d mongo
+```
 ### 2. Check If Container is Running
 
 ```
