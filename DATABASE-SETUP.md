@@ -1,36 +1,27 @@
-# Task Manager API
+## Initial setup and Install required dependenicies
 
-## Project Description
-This is a simple **Task Manager API** backend using **Node.js, Express, and MySQL**.  
-The database runs inside a **Docker container**, so you don’t need to install MySQL locally.  
+```
+npm init -y
+```
 
-It supports basic CRUD operations for users, and later you can extend it to include tasks.
 
----
-
-## Technologies Used
-- Node.js
-- Express.js
-- MySQL (running inside Docker)
-- mysql2 npm package
-- dotenv for environment variables
-- CORS
-
----
-
-### Install required dependenicies
+#### Install required dependenicies
 
 ```
 npm install cors express dotenv nodemon mysql
+npm install cors express dotenv nodemon pg
+npm install cors express dotenv nodemon mongoose
 ```
 
-## MySQL Setup with Docker
+## Setup with Docker
 
 ### 1. Run MySQL Container
 
 Open terminal (Git Bash) and run:
 
 ### mysql
+
+databse name -> task_manager
 
 ```bash
 docker run --name mysql-container \
@@ -40,32 +31,39 @@ docker run --name mysql-container \
   -d mysql:8
 ```
 
-##### This will:
+### postgresql
 
-###### - Create container named mysql-container
+```bash
+docker run --name postgres-container \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=1234 \
+  -e POSTGRES_DB=task_manager \
+  -p 5432:5432 \
+  -d postgres:16
+```
 
-###### - Set root password = 1234
+can use Neon, Supabase databases
 
-###### - Create database task_manager
+### mongo
 
-###### - Expose port 3306
-
-###### - Run MySQL 8 inside Docker
-
-### mongodb
 ```
 docker run --name mongodb-container -p 27017:27017 -d mongo
 ```
+
+use mongodb atlas is easier
+
+
 ### 2. Check If Container is Running
 
 ```
 docker ps
 ```
 
-### 3. Enter MySQL Inside Container
+### 3. Enter queries Inside Container
 
 ```
 docker exec -it mysql-container mysql -u root -p
+docker exec -it postgres-container psql -U postgres -d task_manager
 ```
 
 #### Then inside MySQL:
@@ -82,10 +80,25 @@ CREATE TABLE users (
 );
 ```
 
+#### Then inside postgreSQL:
+
+```
+USE task_manager;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  telephone VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
 ### Using db.sql File (Optional)
 
 ```
 docker exec -i mysql-container mysql -u root -p1234 task_manager < db.sql
+docker exec -it postgres-container psql -U postgres -d task_manager < db.sql
 ```
 
 ### 4. Show Tables
